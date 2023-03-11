@@ -1,12 +1,11 @@
 class Place {
-  constructor(id, title, image, address, lat, lng) {
-    this.id = id.toString();
-    this.title = title;
-    this.image = image
-    this.address = address
-    this.lat = lat
-    this.lng = lng
-  }
+    constructor(id, title, image, address, coords) {
+        this.id = id;
+        this.title = title;
+        this.image = image;
+        this.address = address;
+        this.coords = coords;
+    }
 }
 
-export default Place
+export default Place;

@@ -1,95 +1,104 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, Alert } from 'react-native';
+import React, { useState, useEffect } from "react";
+import { View, Button, Text, StyleSheet, Alert } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import * as Location from "expo-location";
-import { useNavigation, useRoute } from '@react-navigation/native';
-
-import {COLORS} from "../constants";
-import MapPreview from './MapPreview';
-
-
-const LocationSelector = ({onLocation,}) => {
-    const navigation = useNavigation();
-    const route = useRoute();
-    const [pickedLocation, setPickedLocation] = useState();
-
-    const verifyPermissions = async () => {
-        const {status} = await Location.requestForegroundPermissionsAsync();
-
-        if(status !== "granted"){
-            Alert.alert(
-                "Permisos insuficientes",
-                "Necesita dar permisos de la localizacion para usar la aplicacion",
-                [{text: "Ok"}]
-            );
-            return false;
-        };
-
-        return true;
-    }
-
-    const handleGetLocation = async () => {
-        const isLocationOk = await verifyPermissions();
-
-        if(!isLocationOk) return;
-
-        const location = await Location.getCurrentPositionAsync({
-            timeout: 5000,
-        });
-
-        setPickedLocation({
-            lat: location.coords.latitude,
-            lng: location.coords.longitude,
-        });
-
-        onLocation({
-            lat: location.coords.latitude,
-            lng: location.coords.longitude,
-        });
-    }
-
-    const handlePickOnMap = async () => {
-        const isLocationOk = await verifyPermissions();
-
-        if(!isLocationOk) return;
-
-        navigation.navigate("Map");
-    }
-
-    const mapLocation = route?.params?.mapLocation;
-  return (
-    <View style={styles.container}>
-        <MapPreview location={pickedLocation} style={styles.preview}>
-            <Text>Location en proceso...</Text>
-        </MapPreview>
-        <View style={styles.actions}>
-            <Button title='Obtain Location' color={COLORS.PEACH_PUFF} onPress={handleGetLocation} />
-            <Button title='Elegir del Mapa' color={COLORS.LIGTH_PINK} onPress={handlePickOnMap}/>
-        </View>
-    </View>
-  )
-}
-
-export default LocationSelector
+import colors from "../utils/colors";
+import MapPreview from "./MapPreview";
 
 const styles = StyleSheet.create({
-    container:{
-        marginBottom: 10,
+    container: {
+        marginBottom: 20
     },
-    preview:{
-        width:"100%",
+    preview: {
+        width: "100%",
         height: 200,
-        marginBottom: 10,
+        marginBottom: 20,
         justifyContent: "center",
         alignItems: "center",
-        borderColor: COLORS.BLUSH,
+        borderColor: colors.primary,
         borderWidth: 1,
     },
-    image:{
+    image: {
         width: "100%",
         height: "100%",
     },
-    actions: {
+    buttons: {
         flexDirection: "row",
-        justifyContent: "space-around"
+        justifyContent: "space-around",
     }
 })
+
+const LocationSelector = ({ onLocation }) => {
+    const [pickedLocation, setPickedLocation] = useState();
+    const navigation = useNavigation();
+    const route = useRoute();
+
+    const mapLocation = route?.params?.mapLocation;
+
+    useEffect(() => {
+        if(mapLocation){
+            setPickedLocation(mapLocation);
+            onLocation(mapLocation)
+        }
+    }, [mapLocation]);
+
+    const handleGetLocation = async () => {
+        const isLocationPermissionGranted = await verifyPermissions();
+
+        if(!isLocationPermissionGranted) return;
+
+        const location = await Location.getCurrentPositionAsync({
+            timeInterval: 5000
+        })
+
+        const { latitude, longitude } = location.coords;
+
+        setPickedLocation({
+            lat: latitude,
+            lng: longitude
+        })
+
+        onLocation({
+            lat: latitude,
+            lng: longitude
+        });
+    }
+
+    const verifyPermissions = async () => {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+
+        if (status !== "granted") {
+            Alert.alert("Permisos insuficientes", "Necesitas permisos para usar la localización", [{ text: "Ok" }]);
+            return false;
+        }
+        return true;
+    }
+
+    const handlePickedLocation = async (location) => {
+        const isLocationPermissionGranted = await verifyPermissions();
+        if(!isLocationPermissionGranted) return;
+        navigation.navigate("Map");
+    }
+
+    return (
+        <View style={styles.container}>
+            <MapPreview location={pickedLocation} style={styles.preview}>
+                <Text>localizacion en proceso</Text>
+            </MapPreview>
+            <View style={styles.buttons}>
+                <Button 
+                    title="Obtener ubicación"
+                    onPress={handleGetLocation}
+                    color={colors.primary}
+                />
+                <Button 
+                    title="Elegir desde el mapa"
+                    onPress={handlePickedLocation}
+                    color={colors.secondary}
+                />
+            </View>
+        </View>
+    )
+}
+
+export default LocationSelector;

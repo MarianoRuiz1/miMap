@@ -1,29 +1,35 @@
 import React, { useLayoutEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import MapView, {Marker} from "react-native-maps";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import MapView, { Marker } from "react-native-maps";
+import IonicIcons from '@expo/vector-icons/Ionicons'
+import colors from "../utils/colors";
 
-const initialRegion = {
-  latitude: 48.8583486,
-  longitude: 2.2244437,
-  // latitudeDelta: 0.0922,
-  // longitudeDelta: 0.0421,
-}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
 
-const MapScreen = ({navigation}) => {
-  const [selectedLocation, setSelectedLocation] = useState("");
+const MapScreen = ({ navigation }) => {
+  const [selectedLocation, setSelectedLocation] = useState();
 
+  const initialRegion = {
+    latitude: 37.78825,
+    longitude: -122.4324,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  }
 
-  const handleSelectedLocation = event => {
+  const handlerPickLocation = (event) => {
     setSelectedLocation({
       lat: event.nativeEvent.coordinate.latitude,
       lng: event.nativeEvent.coordinate.longitude,
-    })
+    });
   }
 
   const handleSaveLocation = () => {
-    if(selectedLocation){
-      navigation.navigate("Nuevo", {mapLocation: selectedLocation});
+    if(selectedLocation) {
+      navigation.navigate('NewPlace', { mapLocation: selectedLocation });
     }
   }
 
@@ -31,26 +37,29 @@ const MapScreen = ({navigation}) => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity onPress={handleSaveLocation}>
-          <Ionicons name="md-save-outline" color="white" size={22}/>
+          <IonicIcons name="md-save-sharp" size={25} color={colors.black} />
         </TouchableOpacity>
       )
     })
-  }, [])
-
+  }, [navigation,handleSaveLocation]);
+  
   return (
-    <MapView initialRegion={initialRegion} styles={styles.container}  onPress={handleSelectedLocation}>
-      {selectedLocation && (
-        <Marker title="Ubicacion seleccionada" coordinate={{latitude: selectedLocation.lat, longitude:selectedLocation.lng}} />
-      )}
-
-    </MapView>
+    <MapView 
+      initialRegion={initialRegion}
+      style={styles.container} 
+      onPress={handlerPickLocation}>
+        {selectedLocation && (
+          <Marker 
+          title="Ubicación seleccionada"
+          coordinate={{
+            ...selectedLocation,
+            latitude: selectedLocation.lat,
+            longitude: selectedLocation.lng,
+          }}
+          />
+        )}
+      </MapView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default MapScreen;

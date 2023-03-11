@@ -1,70 +1,61 @@
 import React from "react";
 import { Platform, TouchableOpacity } from "react-native";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { NavigationContainer } from "@react-navigation/native";
-
 import PlaceDetailScreen from "../screens/PlaceDetailScreen";
-import PlaceListScreen from "../screens/PlaceListScreen";
 import NewPlaceScreen from "../screens/NewPlaceScreen";
 import MapScreen from "../screens/MapScreen";
-import { COLORS } from "../constants";
+import PlaceListScreen from "../screens/PlaceListScreen";
+import colors from "../utils/colors";
+import IonicIcons from '@expo/vector-icons/Ionicons'
 
-const PlaceStack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator();
 
-const PlaceNavigator = () => {
-  return (
-    <NavigationContainer>
-      <PlaceStack.Navigator
-        initialRouteName="Direcciones"
-        screenOptions={{
-          headerStyle: {
-            backgroundColor:
-              Platform.OS === "android" ? COLORS.DARK_SIENNA : "",
-          },
-          headerTintColor:
-            Platform.OS === "android" ? "white" : COLORS.DARK_SIENNA,
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
-        }}
-      >
-        <PlaceStack.Screen
-          name="Direcciones"
-          component={PlaceListScreen}
-          options={({ navigation }) => ({
-            title: "Direcciones",
-            headerRight: () => (
-              <TouchableOpacity onPress={() => navigation.navigate("Nuevo")}>
-                <Ionicons
-                  name="md-add"
-                  color={
-                    Platform.OS === "android" ? "white" : COLORS.DARK_SIENNA
-                  }
-                  size={23}
-                />
-              </TouchableOpacity>
-            ),
-          })}
-        />
-        <PlaceStack.Screen
-          name="Detalle"
-          component={PlaceDetailScreen}
-          options={{ title: "Detalle direccion" }}
-        />
-        <PlaceStack.Screen
-          name="Nuevo"
-          component={NewPlaceScreen}
-          options={{ title: "Nueva direccion" }}
-        />
-        <PlaceStack.Screen
-          name="Map"
-          component={MapScreen}
-          options={{ title: "Mapa" }}
-        />
-      </PlaceStack.Navigator>
-    </NavigationContainer>
-  );
-};
+const PlaceNavigator = () => (
+  <Stack.Navigator
+    initialRouteName="Place"
+    screenOptions={{
+      headerStyle: {
+        backgroundColor:
+          Platform.OS === "android" ? colors.primary : colors.secondary,
+      },
+      headerTintColor: Platform.OS === "android" ? colors.white : colors.black,
+      headerTitleStyle: {
+        fontWeight: "bold",
+      },
+    }}
+  >
+    <Stack.Screen
+      name="Place"
+      component={PlaceListScreen}
+      options={({ navigation }) => ({ 
+        title: "Direcciones",
+        headerRight: () => (
+          <TouchableOpacity onPress={() => navigation.navigate("NewPlace")}>
+            <IonicIcons
+              name="add-circle-outline"
+              size={25}
+              color={colors.black}
+              />
+          </TouchableOpacity>
+        )
+      })}
+    />
+    <Stack.Screen
+      name="PlaceDetail"
+      component={PlaceDetailScreen}
+      options={{ title: "Detalle de Dirección" }}
+    />
+    <Stack.Screen
+      name="NewPlace"
+      component={NewPlaceScreen}
+      options={{ title: "Nueva Dirección" }}
+    />
+    <Stack.Screen
+      name="Map"
+      component={MapScreen}
+      options={{ title: "Mapa" }}
+    />
+  </Stack.Navigator>
+);
 
 export default PlaceNavigator;

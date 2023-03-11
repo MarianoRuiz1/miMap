@@ -1,28 +1,30 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
-import Map from '../constants/Map';
-
-const MapPreview = ({location, style, children}) => {
-    const MapPreviewUrl = location ? `https://maps.googleapis.com/maps/api/staticmap?center=${location.lat},${location.lng}&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C${location.lat},${location.lng}&key=${Map.API_KEY}`
-    : "";
-
-  return (
-    <View style={{...styles.mapPreview, ...style}}>
-      {location ? <Image style={style.mapImage} source={{uri: MapPreviewUrl}}/>
-      : (children)}
-    </View>
-  )
-}
-
-export default MapPreview
+import React from "react";
+import { View, Image, StyleSheet } from "react-native";
+import { URL_MAPS } from "../utils/maps";
 
 const styles = StyleSheet.create({
-    mapPreview:{
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    mapImage:{
-        width: "100%",
-        height: "100%",
-    }
+  container: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  mapImage: {
+    width: "100%",
+    height: "100%",
+  },
 });
+
+const MapPreview = ({ children, location, style }) => {
+  const { lat, lng } = location || {};
+  const mapPreviewUrl = location ? URL_MAPS(lat, lng) : "";
+  return (
+    <View style={{ ...styles.container, ...style }}>
+      {location ? (
+        <Image style={styles.mapImage} source={{ uri: mapPreviewUrl }} />
+      ) : (
+        children
+      )}
+    </View>
+  );
+};
+
+export default MapPreview;

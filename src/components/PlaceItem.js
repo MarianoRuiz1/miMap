@@ -1,11 +1,42 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
-import { COLORS } from "../constants";
+import { TouchableOpacity, View, Text, Image, StyleSheet } from "react-native";
+import colors from "../utils/colors";
 
-const PlaceItem = ({ title, image, address, onSelect }) => {
+const styles = StyleSheet.create({
+  container: {
+    borderBottomColor: colors.primary,
+    borderBottomWidth: 1,
+    padding: 20,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  image: {
+    width: 80,
+    height: 80,
+    borderRadius: 20,
+    backgroundColor: colors.secondary,
+  },
+  info: {
+    marginLeft: 15,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "flex-start",
+  },
+  title: {
+    fontSize: 16,
+    color: colors.text,
+    marginBottom: 10,
+  },
+  address: {
+    fontSize: 14,
+    color: colors.primary,
+  },
+});
+
+const PlaceItem = ({ id, title, image, address, onSelect }) => {
   return (
-    <TouchableOpacity onPress={onSelect} style={styles.placeItem}>
-      <Image style={styles.image} source={{ uri: image }} />
+    <TouchableOpacity style={styles.container} onPress={() => onSelect(id)}>
+      <Image source={{ uri: image }} style={styles.image} />
       <View style={styles.info}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.address}>{address}</Text>
@@ -15,35 +46,3 @@ const PlaceItem = ({ title, image, address, onSelect }) => {
 };
 
 export default PlaceItem;
-
-const styles = StyleSheet.create({
-  placeItem: {
-    borderBottomColor: "#ccc",
-    borderBottomWidth: 1,
-    paddingVertical: 16,
-    paddingHorizontal: 30,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  image: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: COLORS.PEACH_PUFF,
-  },
-  info: {
-    marginLeft: 25,
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "flex-start",
-  },
-  title: {
-    color: COLORS.BLUSH,
-    fontSize: 18,
-    marginBottom: 6,
-  },
-  address: {
-    color: "#777",
-    fontSize: 16,
-  },
-});

@@ -1,67 +1,62 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  TextInput,
-  ScrollView,
-} from "react-native";
-import { COLORS } from "../constants";
-import { addPlace } from "../store/places.actions";
+import { ScrollView, View, StyleSheet, Text, TextInput, Button } from "react-native";
+import colors from "../utils/colors";
 import { useDispatch } from "react-redux";
+import { savePlace } from "../store/place.slice";
 import ImageSelector from "../components/ImageSelector";
 import LocationSelector from "../components/LocationSelector";
-
-const NewPlaceScreen = ({ navigation }) => {
-  const dispatch = useDispatch();
-  const [title, setTitle] = useState("");
-
-  const handleTitleChange = (text) => setTitle(text);
-
-  const handleSave = (image) => {
-    console.log(image)
-    dispatch(addPlace(title, image));
-    navigation.navigate("Direcciones");
-  };
-
-  return (
-    <ScrollView>
-      <View style={styles.container}>
-        <Text style={styles.label}>Titulo</Text>
-        <TextInput
-          style={styles.input}
-          value={title}
-          onChangeText={handleTitleChange}
-        />
-        <ImageSelector onImage={(image) => handleSave(image)} />
-        <LocationSelector onLocation={() => console.log("location")}/>
-        <Button
-          title="Grabar direccion"
-          color={COLORS.MAROON}
-          onPress={handleSave}
-        />
-      </View>
-    </ScrollView>
-  );
-};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: 30,
   },
-  label: {
+  content: {
+    flex: 1,
+    margin: 20,
+  },
+  title: {
     fontSize: 18,
-    marginBottom: 16,
+    marginBottom: 20
   },
   input: {
-    borderBottomColor: "#ccc",
+    borderBottomColor: colors.primary,
     borderBottomWidth: 1,
-    marginBottom: 16,
-    paddingHorizontal: 2,
-    paddingVertical: 4,
-  },
+    marginBottom: 20,
+    padding: 5,
+  }
 });
 
-export default NewPlaceScreen;
+const NewPlaceSreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const [title, setTitle] = useState("");
+  const [image, setImage] = useState("");
+  const [location, setLocation] = useState({});
+
+  const onHandleTitleChange = (text) => setTitle(text);
+  const onHandleSubmit = () => {
+    dispatch(savePlace(title, image, location));
+    navigation.navigate("Place");
+  }
+
+  const onHandleImageSelect = (imageUrl) => setImage(imageUrl);
+
+  const onHandleLocationSelect = (location) => setLocation(location);
+
+  return (
+    <ScrollView style={styles.container}>
+     <View style={styles.content}>
+        <Text style={styles.title}>Titulo</Text>
+        <TextInput style={styles.input} placeholder="Nueva ubicacion"  onChangeText={onHandleTitleChange} value={title}/>
+        <ImageSelector onImage={onHandleImageSelect} />
+        <LocationSelector onLocation={onHandleLocationSelect}/>
+        <Button 
+          title="Grabar Direccion"
+          color={colors.primary}
+          onPress={onHandleSubmit}
+        />
+     </View>
+    </ScrollView>
+  );
+};
+
+export default NewPlaceSreen;

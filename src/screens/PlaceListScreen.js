@@ -1,29 +1,47 @@
 import React, { useEffect } from "react";
-import { FlatList } from "react-native";
-import { useSelector } from "react-redux";
+import { View, StyleSheet, Text, FlatList } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
 import PlaceItem from "../components/PlaceItem";
+import { loadPlaces } from "../store/place.slice";
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  emptyContainer: {
+    marginVertical: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
 
 const PlaceListScreen = ({ navigation }) => {
-  const places = useSelector((state) => state.places.places);
+  const dispatch = useDispatch();
+  const places = useSelector((state) => state.place.places);
 
   useEffect(() => {
-    console.log(places);
-  }, [places]);
+    dispatch(loadPlaces());
+  }, []);
 
+  const onSelectPlace = (id) => {
+    navigation.navigate("PlaceDetail", { placeId: id });
+  };
   const renderItem = ({ item }) => (
-    <PlaceItem
-      title={item.title}
-      image={item.image}
-      address={item.address}
-      onSelect={() => navigation.navigate("Detalle")}
-    />
+    <PlaceItem {...item} onSelect={onSelectPlace} />
   );
 
+  const ListEmptyComponent = () => (
+    <View style={styles.emptyContainer}>
+      <Text>No hay lugares disponibles</Text>
+    </View>
+  );
   return (
     <FlatList
+      style={styles.container}
       data={places}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item.id.toString()}
       renderItem={renderItem}
+      ListEmptyComponent={ListEmptyComponent}
     />
   );
 };

@@ -1,11 +1,12 @@
-import { createStore, combineReducers, applyMiddleware } from "redux";
-import thunk from "redux-thunk";
+import { configureStore } from "@reduxjs/toolkit";
+import placeReducer from "./place.slice";
 
-// reducers
-import PlacesReducer from "./places.reducer";
-
-const RootReducer = combineReducers({
-  places: PlacesReducer,
+export const store = configureStore({
+  reducer: {
+    place: placeReducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    })
 });
-
-export default createStore(RootReducer, applyMiddleware(thunk));
